@@ -17,7 +17,7 @@ import { Button } from "./ui/button";
 import { Textarea } from "./ui/textarea";
 import { MutableRefObject, RefObject } from "react";
 import { collection, doc, setDoc } from "firebase/firestore";
-import { db } from "@/app/data/firebase";
+import { db } from "@/data/firebase";
 import {
   Select,
   SelectContent,
