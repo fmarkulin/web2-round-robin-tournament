@@ -15,8 +15,8 @@ import {
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import { Textarea } from "./ui/textarea";
-import { MutableRefObject, RefObject } from "react";
-import { collection, doc, setDoc } from "firebase/firestore";
+import { RefObject, useState } from "react";
+import { Timestamp, collection, doc, getDoc, setDoc } from "firebase/firestore";
 import { db } from "@/data/firebase";
 import {
   Select,
@@ -26,65 +26,69 @@ import {
   SelectValue,
 } from "./ui/select";
 import toast from "react-hot-toast";
-
-const schema = z.object({
-  title: z
-    .string()
-    .min(3, "Tournament title must be at least 3 characters long"),
-  players: z
-    .string()
-    .includes(";", {
-      message: "Players must be separated by a semicolon (;)",
-    })
-    .refine(
-      (value) =>
-        value.split(";").length >= 4 &&
-        value.split(";").length <= 8 &&
-        value.split(";").every((player) => player.length > 0),
-      {
-        message:
-          "Tournament must have at least 4 players and at most 8 players",
-      }
-    ),
-  pointSystem: z.enum(["football", "chess", "basketball"], {
-    required_error: "You must select a point system",
-  }),
-});
-
-const kirkmanPairing = (n: number, r: number) => {
-  // use fixating of first player
-  const rounds: Round[] = [];
-
-  // create array of pairs
-  const indexes = [];
-  for (let i = 0; i < n; i++) {
-    indexes.push(i);
-  }
-  if (n % 2 === 1) {
-    n++;
-    indexes.push(null);
-  }
-  console.log(indexes);
-
-  const indexPairs = [];
-  for (let i = 0; i < n / 2; i++) {
-    indexPairs.push(0 + "," + (n - 1 - i));
-    for (let j = 1; j < n - 1; j++) {
-      indexPairs.push(n - 1 - i - j + "," + j);
-    }
-  }
-  console.log(indexPairs);
-
-  return rounds;
-};
+import { useRouter } from "next/navigation";
+import slugify from "slugify";
 
 export default function AddTournamentForm({
   closeRef,
 }: {
   closeRef: RefObject<HTMLElement>;
 }) {
+  const router = useRouter();
+
+  const schema = z.object({
+    title: z
+      .string()
+      .min(3, "Tournament title must be at least 3 characters long")
+      .refine(async (value) => {
+        if (value.length === 0) {
+          setSlug("");
+          return false;
+        }
+        const newSlug = slugify(value, {
+          lower: true,
+          remove: /[*+~.()'"!:@/]/g,
+        });
+        setSlug(newSlug);
+
+        const tournamentRef = doc(db, "tournaments", newSlug);
+        try {
+          const tournamentSnapshot = await getDoc(tournamentRef);
+          if (tournamentSnapshot.exists()) {
+            console.log("not available");
+            return false;
+          }
+          console.log("available");
+          return true;
+        } catch (error) {
+          console.error(error);
+          return false;
+        }
+      }, "Choose a different title"),
+    players: z
+      .string()
+      .includes(";", {
+        message: "Players must be separated by a semicolon (;)",
+      })
+      .refine(
+        (value) =>
+          value.split(";").length >= 4 &&
+          value.split(";").length <= 8 &&
+          value.split(";").every((player) => player.length > 0),
+        {
+          message:
+            "Tournament must have at least 4 players and at most 8 players",
+        }
+      ),
+    pointSystem: z.enum(["football", "chess", "basketball"], {
+      required_error: "You must select a point system",
+    }),
+  });
+
   const form = useForm<z.infer<typeof schema>>({
     resolver: zodResolver(schema),
+    delayError: 250,
+    mode: "onChange",
     defaultValues: {
       title: "",
       players: "",
@@ -93,7 +97,6 @@ export default function AddTournamentForm({
 
   async function onSubmit(values: z.infer<typeof schema>) {
     const { title, players, pointSystem } = values;
-    console.log(pointSystem);
 
     const formattedPlayers: Player[] = players.split(";").map((player, i) => {
       return {
@@ -916,16 +919,19 @@ export default function AddTournamentForm({
       rounds.push(newRound);
     }
 
-    const tournamentRef = doc(collection(db, "tournaments"));
     const tournament: Tournament = {
-      id: tournamentRef.id,
+      slug,
       title,
       players: formattedPlayers,
       pointSystem,
       rounds,
+      timestamp: Timestamp.now().toMillis(),
     };
 
-    const setPromise = setDoc(tournamentRef, tournament);
+    const setPromise = setDoc(
+      doc(db, "tournaments", tournament.slug),
+      tournament
+    );
     toast.promise(setPromise, {
       loading: "Creating tournament...",
       success: "Tournament created!",
@@ -935,10 +941,13 @@ export default function AddTournamentForm({
     try {
       await setPromise;
       closeRef.current?.click();
+      router.refresh();
     } catch (error) {
       console.error(error);
     }
   }
+
+  const [slug, setSlug] = useState<string>("");
 
   return (
     <Form {...form}>
@@ -950,9 +959,15 @@ export default function AddTournamentForm({
             <FormItem>
               <FormLabel>Title</FormLabel>
               <FormControl>
-                <Input placeholder="Chess" {...field} />
+                <Input
+                  placeholder="Chess"
+                  // onChange={(e) => setSlug(slugify(e.target.value))}
+                  {...field}
+                />
               </FormControl>
-              <FormDescription>This is you tournament title.</FormDescription>
+              <FormDescription>
+                URL: <span className="font-mono">{"/tournaments/" + slug}</span>
+              </FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -1002,7 +1017,12 @@ export default function AddTournamentForm({
             </FormItem>
           )}
         />
-        <Button type="submit">Submit</Button>
+        <Button
+          className="hover:scale-105 active:scale-100 transition-all duration-75"
+          type="submit"
+        >
+          Submit
+        </Button>
       </form>
     </Form>
   );

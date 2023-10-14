@@ -17,9 +17,10 @@ declare type Round = {
 };
 
 declare type Tournament = {
-  id: string;
   title: string;
+  slug: string;
   pointSystem: "football" | "basketball" | "chess";
   players: Player[];
   rounds: Round[];
+  timestamp: number;
 };

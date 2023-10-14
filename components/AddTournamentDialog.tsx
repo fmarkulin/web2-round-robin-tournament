@@ -22,7 +22,7 @@ export default function AddTournamentDialog() {
       <DialogTrigger asChild>
         <Button
           size={"icon"}
-          className="rounded-full text-lg w-14 h-14 absolute right-8 bottom-8 shadow-lg hover:shadow-xl"
+          className="rounded-full text-lg w-14 h-14 fixed right-8 bottom-8 shadow-lg hover:shadow-xl hover:scale-110 transition-all duration-75"
         >
           <Plus />
         </Button>

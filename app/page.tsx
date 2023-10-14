@@ -1,20 +1,20 @@
 import AddTournamentDialog from "@/components/AddTournamentDialog";
-import { collection, getDocs } from "firebase/firestore";
-import { db } from "@/data/firebase";
-
-const getTournaments = async () => {
-  const tournamentSnapshots = await getDocs(collection(db, "tournaments"));
-  const tournaments = tournamentSnapshots.docs.map((doc) => doc.data());
-  return tournaments;
-};
+import { Suspense } from "react";
+import Tournaments from "@/components/Tournaments";
+import TournamentLoading from "@/components/TournamentLoading";
 
 export default async function Home() {
-  const tournaments = await getTournaments();
-  console.log("tournaments:", tournaments);
-
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <AddTournamentDialog />
-    </main>
+    <>
+      <main className="min-h-screen p-8">
+        <AddTournamentDialog />
+        <div className="max-w-xl mx-auto">
+          <h1 className="text-4xl font-bold mb-5">Tournaments</h1>
+          <Suspense fallback={<TournamentLoading />}>
+            <Tournaments />
+          </Suspense>
+        </div>
+      </main>
+    </>
   );
 }
