@@ -114,7 +114,7 @@ export default function PlayerTable({
         {players
           .sort((a, b) => b.points - a.points)
           .map((player) => (
-            <TableRow>
+            <TableRow key={player.id}>
               <TableCell>{player.name}</TableCell>
               <TableCell>{player.points}</TableCell>
             </TableRow>

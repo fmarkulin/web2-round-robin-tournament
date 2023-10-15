@@ -29,7 +29,7 @@ export default function TournamentIndexCard({
         <ScrollArea className="h-[205px] rounded-md border p-3">
           <h4 className="mb-3 text-md font-medium leading-none ">Players</h4>
           {tournament.players.map((player, i) => (
-            <div>
+            <div key={player.id}>
               <p>{player.name}</p>
               {i !== tournament.players.length - 1 && (
                 <Separator className="my-2" />

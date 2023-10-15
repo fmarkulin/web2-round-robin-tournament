@@ -72,7 +72,7 @@ export default async function Page({ params }: { params: { slug: string } }) {
       <div className="flex flex-col justify-between gap-16 md:flex-row md:gap-4">
         <div className="flex flex-col gap-10">
           {rounds.map((round, index) => (
-            <div>
+            <div key={round.id}>
               <h2 className="text-xl font-medium mb-2">
                 Round {index + 1} - {round.pairs.length} matches
               </h2>
@@ -81,6 +81,7 @@ export default async function Page({ params }: { params: { slug: string } }) {
                   if (user && user.sub === tournament.userSub) {
                     return (
                       <AdminTable
+                        key={"" + round.id + pair.id}
                         tournamentSlug={tournament.slug}
                         roundId={round.id}
                         pair={pair}

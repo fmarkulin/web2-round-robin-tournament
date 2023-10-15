@@ -17,11 +17,11 @@ export default function TournamentLoading() {
       <div className="flex">
         <div className="flex flex-col gap-10">
           {Array.from({ length: 3 }, (_, i) => i + 1).map((_, index) => (
-            <div>
+            <div key={index}>
               <Skeleton className="w-[150px] h-[25px] mb-2" />
               <div className="flex gap-4">
                 {Array.from({ length: 2 }, (_, i) => i + 1).map((_, index) => (
-                  <Table className="border-2">
+                  <Table className="border-2" key={index}>
                     <TableCaption>
                       <Skeleton className="w-[60px] h-[20px]" />
                     </TableCaption>

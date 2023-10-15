@@ -44,7 +44,7 @@ export default async function Tournaments() {
   return (
     <div className="flex flex-col gap-4">
       {tournaments.map((tournament) => (
-        <TournamentIndexCard tournament={tournament} />
+        <TournamentIndexCard key={tournament.slug} tournament={tournament} />
       ))}
     </div>
   );
