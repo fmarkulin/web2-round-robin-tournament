@@ -1,5 +1,5 @@
 import { db } from "@/data/firebase";
-import { collection, getDoc, getDocs } from "firebase/firestore";
+import { collection, getDocs } from "firebase/firestore";
 import TournamentIndexCard from "./TournamentIndexCard";
 
 const getTournaments = async () => {
