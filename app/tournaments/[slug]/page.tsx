@@ -92,6 +92,7 @@ export default async function Page({ params }: { params: { slug: string } }) {
                   } else {
                     return (
                       <PublicTable
+                        key={"" + round.id + pair.id}
                         pair={pair}
                         players={players}
                         index={index}
