@@ -39,7 +39,7 @@ export default function AddTournamentDialog() {
           <AddTournamentForm closeRef={closeRef} />
         ) : (
           <>
-            "You need to be logged in to create a tournament."
+            You need to be logged in to create a tournament.
             <Button asChild>
               <Link href="/api/auth/login">Login</Link>
             </Button>
