@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Button } from "./ui/button";
 import {
   Card,
@@ -38,8 +39,11 @@ export default function TournamentIndexCard({
         </ScrollArea>
       </CardContent>
       <CardFooter>
-        <Button className="hover:scale-105 active:scale-100 transition-all duration-75">
-          View
+        <Button
+          className="hover:scale-105 active:scale-100 transition-all duration-75"
+          asChild
+        >
+          <Link href={`/tournaments/${tournament.slug}`}>View</Link>
         </Button>
       </CardFooter>
     </Card>

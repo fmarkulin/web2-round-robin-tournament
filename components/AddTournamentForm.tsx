@@ -16,7 +16,14 @@ import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import { Textarea } from "./ui/textarea";
 import { RefObject, useState } from "react";
-import { Timestamp, collection, doc, getDoc, setDoc } from "firebase/firestore";
+import {
+  Timestamp,
+  collection,
+  doc,
+  getDoc,
+  setDoc,
+  writeBatch,
+} from "firebase/firestore";
 import { db } from "@/data/firebase";
 import {
   Select,
@@ -919,27 +926,54 @@ export default function AddTournamentForm({
       rounds.push(newRound);
     }
 
-    const tournament: Tournament = {
+    const batch = writeBatch(db);
+
+    const tournament = {
       slug,
       title,
       players: formattedPlayers,
       pointSystem,
-      rounds,
       timestamp: Timestamp.now().toMillis(),
     };
 
-    const setPromise = setDoc(
-      doc(db, "tournaments", tournament.slug),
-      tournament
-    );
-    toast.promise(setPromise, {
-      loading: "Creating tournament...",
-      success: "Tournament created!",
-      error: "Error creating tournament",
+    batch.set(doc(db, "tournaments", tournament.slug), tournament);
+
+    rounds.forEach((round) => {
+      const roundRef = doc(
+        db,
+        "tournaments",
+        tournament.slug,
+        "rounds",
+        round.id.toString()
+      );
+      batch.set(roundRef, {
+        id: round.id,
+      });
+
+      round.pairs.forEach((pair) => {
+        const pairRef = doc(
+          db,
+          "tournaments",
+          tournament.slug,
+          "rounds",
+          round.id.toString(),
+          "pairs",
+          pair.id.toString()
+        );
+
+        batch.set(pairRef, pair);
+      });
+    });
+
+    const batchPromise = batch.commit();
+    toast.promise(batchPromise, {
+      loading: "Creating...",
+      success: "Created!",
+      error: "Error creating.",
     });
 
     try {
-      await setPromise;
+      await batchPromise;
       closeRef.current?.click();
       router.refresh();
     } catch (error) {

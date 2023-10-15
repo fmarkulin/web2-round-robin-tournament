@@ -1,9 +1,9 @@
+import Header from "@/components/Header";
 import "./globals.css";
 import type { Metadata } from "next";
-import { Inter, Space_Grotesk } from "next/font/google";
+import { Space_Grotesk } from "next/font/google";
 import { Toaster } from "react-hot-toast";
 
-const inter = Inter({ subsets: ["latin"] });
 const spaceGrotesk = Space_Grotesk({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
@@ -21,7 +21,10 @@ export default function RootLayout({
     <html lang="en">
       <body className={spaceGrotesk.className}>
         <Toaster />
-        {children}
+        <Header />
+        <main className="min-h-screen p-8 selection:bg-primary selection:text-primary-foreground">
+          {children}
+        </main>
       </body>
     </html>
   );
