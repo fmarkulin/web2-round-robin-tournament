@@ -21,49 +21,32 @@ export default function AddTournamentDialog() {
   const { user, error, isLoading } = useUser();
 
   return (
-    <>
-      {user ? (
-        <Dialog>
-          <DialogTrigger asChild>
-            <Button
-              size={"icon"}
-              className="rounded-full z-10 text-lg w-14 h-14 fixed right-8 bottom-8 shadow-lg hover:shadow-xl hover:scale-110 transition-all duration-75"
-            >
-              <Plus />
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="h-full w-full md:h-auto overflow-y-auto">
-            <DialogHeader>
-              <DialogTitle>New Tournament</DialogTitle>
-              <DialogDescription>Define a new tournament</DialogDescription>
-            </DialogHeader>
-            <AddTournamentForm closeRef={closeRef} />
-          </DialogContent>
-          <DialogClose ref={closeRef} />
-        </Dialog>
-      ) : (
-        <Dialog>
-          <DialogTrigger asChild>
-            <Button
-              size={"icon"}
-              className="rounded-full z-10 text-lg w-14 h-14 fixed right-8 bottom-8 shadow-lg hover:shadow-xl hover:scale-110 transition-all duration-75"
-            >
-              <Plus />
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="h-full w-full md:h-auto overflow-y-auto">
-            <DialogHeader>
-              <DialogTitle>New Tournament</DialogTitle>
-              <DialogDescription>Define a new tournament</DialogDescription>
-            </DialogHeader>
-            You need to be logged in to create a tournament.
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button
+          size={"icon"}
+          className="rounded-full z-10 text-lg w-14 h-14 fixed right-8 bottom-10 shadow-lg hover:shadow-xl hover:scale-110 transition-all duration-75"
+        >
+          <Plus />
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="max-h-full w-11/12 md:w-full md:h-auto overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle>New Tournament</DialogTitle>
+          <DialogDescription>Define a new tournament</DialogDescription>
+        </DialogHeader>
+        {user ? (
+          <AddTournamentForm closeRef={closeRef} />
+        ) : (
+          <>
+            "You need to be logged in to create a tournament."
             <Button asChild>
               <Link href="/api/auth/login">Login</Link>
             </Button>
-          </DialogContent>
-          <DialogClose ref={closeRef} />
-        </Dialog>
-      )}
-    </>
+          </>
+        )}
+      </DialogContent>
+      <DialogClose ref={closeRef} />
+    </Dialog>
   );
 }

@@ -10,7 +10,7 @@ import { notFound } from "next/navigation";
 const getTournament = async (slug: string) => {
   const tournamentRef = doc(db, "tournaments", slug);
   const wait = (ms: number) => new Promise((res) => setTimeout(res, ms));
-  await wait(500); // simulate network delay
+  await wait(1000); // simulate network delay
   try {
     const tournamentSnap = await getDoc(tournamentRef);
     if (tournamentSnap.exists()) {
