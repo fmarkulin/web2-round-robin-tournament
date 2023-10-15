@@ -23,40 +23,62 @@ export default function PublicTable({
       <TableCaption>{`Pair ${index + 1}`}</TableCaption>
       <TableHeader>
         <TableRow>
-          <TableHead className="w-[100px]">Player</TableHead>
+          <TableHead>Player</TableHead>
           <TableHead>Status</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
         <TableRow>
           <TableCell>
-            {pair.p1 !== null ? players[pair.p1].name : "bye"}
+            {pair.p1 !== null ? players[pair.p1].name : <i>bye</i>}
           </TableCell>
           <TableCell>
-            <Badge>
+            <Badge
+              className={
+                (pair.winner === 1
+                  ? "bg-green-500 hover:bg-green-400"
+                  : pair.winner === 0
+                  ? "bg-sky-500 hover:bg-sky-400"
+                  : pair.winner === null
+                  ? "bg-muted text-muted-foreground hover:bg-muted hover:text-muted-foreground"
+                  : "bg-destructive hover:bg-destructive") +
+                " hover:cursor-pointer"
+              }
+            >
               {pair.winner === 1
                 ? "winner"
                 : pair.winner === 0
                 ? "draw"
                 : pair.winner === null
                 ? "pending"
-                : ""}
+                : "loser"}
             </Badge>
           </TableCell>
         </TableRow>
         <TableRow>
           <TableCell>
-            {pair.p2 !== null ? players[pair.p2].name : "bye"}
+            {pair.p2 !== null ? players[pair.p2].name : <i>bye</i>}
           </TableCell>
           <TableCell>
-            <Badge>
-              {pair.winner === 1
+            <Badge
+              className={
+                (pair.winner === 2
+                  ? "bg-green-500 hover:bg-green-400"
+                  : pair.winner === 0
+                  ? "bg-sky-500 hover:bg-sky-400"
+                  : pair.winner === null
+                  ? "bg-muted text-muted-foreground hover:bg-muted hover:text-muted-foreground"
+                  : "bg-destructive hover:bg-destructive") +
+                " hover:cursor-pointer"
+              }
+            >
+              {pair.winner === 2
                 ? "winner"
                 : pair.winner === 0
                 ? "draw"
                 : pair.winner === null
                 ? "pending"
-                : ""}
+                : "loser"}
             </Badge>
           </TableCell>
         </TableRow>

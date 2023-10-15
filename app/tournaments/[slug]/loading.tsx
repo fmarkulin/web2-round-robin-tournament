@@ -1,58 +1,51 @@
-import { Table } from "lucide-react";
-import { Skeleton } from "./ui/skeleton";
 import {
+  Table,
   TableBody,
   TableCaption,
   TableCell,
   TableHead,
   TableHeader,
   TableRow,
-} from "./ui/table";
+} from "@/components/ui/table";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function TournamentLoading() {
   return (
     <div className="max-w-7xl mx-auto">
-      <Skeleton className="w-[300px] h-[50px]" />
-      <Skeleton className="w-[80px] h-[45px]" />
+      <Skeleton className="w-[500px] h-[45px] mb-1" />
+      <Skeleton className="w-[120px] h-[35px] mb-6" />
       <div className="flex">
         <div className="flex flex-col gap-10">
-          {Array.from({ length: 4 }, (_, i) => i + 1).map((_, index) => (
+          {Array.from({ length: 3 }, (_, i) => i + 1).map((_, index) => (
             <div>
-              <Skeleton className="w-[150px] h-[45px]" />
+              <Skeleton className="w-[150px] h-[25px] mb-2" />
               <div className="flex gap-4">
                 {Array.from({ length: 2 }, (_, i) => i + 1).map((_, index) => (
                   <Table className="border-2">
                     <TableCaption>
-                      <Skeleton className="w-[150px] h-[45px]" />
+                      <Skeleton className="w-[60px] h-[20px]" />
                     </TableCaption>
                     <TableHeader>
                       <TableRow>
-                        <TableHead className="w-[100px]">Player</TableHead>
+                        <TableHead>Player</TableHead>
                         <TableHead>Status</TableHead>
-                        <TableHead>Action</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
                       <TableRow>
                         <TableCell>
-                          <Skeleton className="w-[50px] h-[45px]" />
+                          <Skeleton className="w-[115px] h-[20px]" />
                         </TableCell>
                         <TableCell>
-                          <Skeleton className="w-[150px] h-[45px]" />
-                        </TableCell>
-                        <TableCell>
-                          <Skeleton className="w-[45px] h-[45px]" />
+                          <Skeleton className="w-[80px] h-[20px]" />
                         </TableCell>
                       </TableRow>
                       <TableRow>
                         <TableCell>
-                          <Skeleton className="w-[50px] h-[45px]" />
+                          <Skeleton className="w-[115px] h-[20px]" />
                         </TableCell>
                         <TableCell>
-                          <Skeleton className="w-[150px] h-[45px]" />
-                        </TableCell>
-                        <TableCell>
-                          <Skeleton className="w-[45px] h-[45px]" />
+                          <Skeleton className="w-[80px] h-[20px]" />
                         </TableCell>
                       </TableRow>
                     </TableBody>

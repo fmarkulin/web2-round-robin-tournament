@@ -3,6 +3,9 @@ import "./globals.css";
 import type { Metadata } from "next";
 import { Space_Grotesk } from "next/font/google";
 import { Toaster } from "react-hot-toast";
+import { ThemeProvider } from "@/components/ThemeProvider";
+import Footer from "@/components/Footer";
+import { UserProvider } from "@auth0/nextjs-auth0/client";
 
 const spaceGrotesk = Space_Grotesk({ subsets: ["latin"] });
 
@@ -18,14 +21,24 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body className={spaceGrotesk.className}>
-        <Toaster />
-        <Header />
-        <main className="min-h-screen p-8 selection:bg-primary selection:text-primary-foreground">
-          {children}
-        </main>
-      </body>
+    <html lang="en" suppressHydrationWarning>
+      <UserProvider>
+        <body
+          className={`${spaceGrotesk.className} relative selection:bg-primary selection:text-primary-foreground min-h-screen`}
+        >
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <Toaster />
+            <Header />
+            <main className="max-w-7xl mx-auto p-8 pb-16">{children}</main>
+            <Footer />
+          </ThemeProvider>
+        </body>
+      </UserProvider>
     </html>
   );
 }

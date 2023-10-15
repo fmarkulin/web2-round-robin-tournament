@@ -16,14 +16,7 @@ import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import { Textarea } from "./ui/textarea";
 import { RefObject, useState } from "react";
-import {
-  Timestamp,
-  collection,
-  doc,
-  getDoc,
-  setDoc,
-  writeBatch,
-} from "firebase/firestore";
+import { Timestamp, doc, getDoc, writeBatch } from "firebase/firestore";
 import { db } from "@/data/firebase";
 import {
   Select,
@@ -35,6 +28,7 @@ import {
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import slugify from "slugify";
+import { useUser } from "@auth0/nextjs-auth0/client";
 
 export default function AddTournamentForm({
   closeRef,
@@ -42,6 +36,8 @@ export default function AddTournamentForm({
   closeRef: RefObject<HTMLElement>;
 }) {
   const router = useRouter();
+  const { user } = useUser();
+  console.log(user);
 
   const schema = z.object({
     title: z
@@ -62,10 +58,8 @@ export default function AddTournamentForm({
         try {
           const tournamentSnapshot = await getDoc(tournamentRef);
           if (tournamentSnapshot.exists()) {
-            console.log("not available");
             return false;
           }
-          console.log("available");
           return true;
         } catch (error) {
           console.error(error);
@@ -103,6 +97,10 @@ export default function AddTournamentForm({
   });
 
   async function onSubmit(values: z.infer<typeof schema>) {
+    if (!user) {
+      toast.error("You must be logged in to create a tournament.");
+      return;
+    }
     const { title, players, pointSystem } = values;
 
     const formattedPlayers: Player[] = players.split(";").map((player, i) => {
@@ -931,6 +929,7 @@ export default function AddTournamentForm({
     const tournament = {
       slug,
       title,
+      userSub: user.sub,
       players: formattedPlayers,
       pointSystem,
       timestamp: Timestamp.now().toMillis(),
