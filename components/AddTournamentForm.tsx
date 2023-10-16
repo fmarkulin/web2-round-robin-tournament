@@ -37,7 +37,6 @@ export default function AddTournamentForm({
 }) {
   const router = useRouter();
   const { user } = useUser();
-  console.log(user);
 
   const schema = z.object({
     title: z

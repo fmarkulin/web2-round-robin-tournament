@@ -17,14 +17,10 @@ export default function PlayerTable({
   rounds: Round[];
   players: Player[];
 }) {
-  console.log("rounds", rounds);
   (() => {
     for (let round of rounds) {
-      console.log("round", round);
       for (let pair of round.pairs) {
-        console.log("pair", pair);
         if (pair.p1 !== null && pair.p2 !== null) {
-          console.log("p1 and p2 exist");
           const p1 = players.find((player) => player.id === pair.p1);
           const p2 = players.find((player) => player.id === pair.p2);
           if (p1 && p2) {
@@ -67,12 +63,9 @@ export default function PlayerTable({
                   : pointSystem === "basketball"
                   ? 0
                   : 0.5;
-            } else {
-              console.log("not played");
             }
           }
         } else if (pair.p1 !== null) {
-          console.log("p1 exists");
           const p1 = players.find((player) => player.id === pair.p1);
           if (p1) {
             p1.points +=
@@ -83,7 +76,6 @@ export default function PlayerTable({
                 : 1;
           }
         } else if (pair.p2 !== null) {
-          console.log("p2 exists");
           const p2 = players.find((player) => player.id === pair.p2);
           if (p2) {
             p2.points +=
@@ -94,7 +86,6 @@ export default function PlayerTable({
                 : 1;
           }
         }
-        console.log("players", players);
       }
     }
   })();

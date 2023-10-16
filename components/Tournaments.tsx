@@ -39,10 +39,11 @@ const getTournaments = async () => {
 
 export default async function Tournaments() {
   const tournaments: Tournament[] = await getTournaments();
-  console.log(tournaments);
 
   return (
     <div className="flex flex-col gap-4">
+      {tournaments.length === 0 &&
+        "No tournaments yet. Create one by clicking the button at the bottom right corner."}
       {tournaments.map((tournament) => (
         <TournamentIndexCard key={tournament.slug} tournament={tournament} />
       ))}

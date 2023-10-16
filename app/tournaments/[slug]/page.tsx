@@ -1,5 +1,6 @@
 import AdminTable from "@/components/AdminTable";
 import CopyToClipboard from "@/components/CopyToClipboard";
+import DeleteTournament from "@/components/DeleteTournament";
 import PlayerTable from "@/components/PlayerTable";
 import PublicTable from "@/components/PublicTable";
 import { db } from "@/data/firebase";
@@ -64,6 +65,9 @@ export default async function Page({ params }: { params: { slug: string } }) {
       <div className="flex gap-4 items-center">
         <h1 className="text-4xl text font-bold">{tournament.title}</h1>
         <CopyToClipboard />
+        {user && user.sub === tournament.userSub && (
+          <DeleteTournament tournament={tournament} />
+        )}
       </div>
       <h4 className="text-2xl text-slate-500 font-medium mb-5">
         {tournament.pointSystem.charAt(0).toUpperCase() +
