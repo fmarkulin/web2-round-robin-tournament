@@ -1,6 +1,8 @@
 import { db } from "@/data/firebase";
 import { collection, getDocs } from "firebase/firestore";
 import TournamentIndexCard from "./TournamentIndexCard";
+import { getSession } from "@auth0/nextjs-auth0";
+import TournamentsLoading from "./TournamentsLoading";
 
 const getTournaments = async () => {
   const tournamentSnapshots = await getDocs(collection(db, "tournaments"));
@@ -39,12 +41,26 @@ const getTournaments = async () => {
 
 export default async function Tournaments() {
   const tournaments: Tournament[] = await getTournaments();
+  const session = await getSession();
+  const { user } = session || {};
+
+  if (!user)
+    return (
+      <div className="flex flex-col gap-4">
+        Log in to see your tournaments or create a new one.
+      </div>
+    );
+
+  const { sub } = user;
+  const filteredTournaments = tournaments.filter(
+    (tournament) => tournament.userSub === sub
+  );
 
   return (
     <div className="flex flex-col gap-4">
-      {tournaments.length === 0 &&
+      {filteredTournaments.length === 0 &&
         "No tournaments yet. Create one by clicking the button at the bottom right corner."}
-      {tournaments.map((tournament) => (
+      {filteredTournaments.map((tournament) => (
         <TournamentIndexCard key={tournament.slug} tournament={tournament} />
       ))}
     </div>

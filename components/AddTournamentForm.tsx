@@ -94,6 +94,7 @@ export default function AddTournamentForm({
       title: "",
       players: "",
     },
+    shouldUnregister: true,
   });
 
   async function onSubmit(values: z.infer<typeof schema>) {
