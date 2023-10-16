@@ -91,7 +91,7 @@ export default function PlayerTable({
   })();
 
   return (
-    <Table className="border-2 w-auto mx-auto">
+    <Table className="border-2">
       <TableCaption>
         <h5 className="text-lg font-medium mb-2">Current lineup</h5>
       </TableCaption>

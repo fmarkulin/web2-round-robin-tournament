@@ -73,7 +73,7 @@ export default async function Page({ params }: { params: { slug: string } }) {
         {tournament.pointSystem.charAt(0).toUpperCase() +
           tournament.pointSystem.slice(1)}
       </h4>
-      <div className="flex flex-col justify-between gap-16 md:flex-row md:gap-4">
+      <div className="flex flex-col gap-16 justify-between items-center md:flex-row md:gap-8 md:items-start">
         <div className="flex flex-col gap-10">
           {rounds.map((round, index) => (
             <div key={round.id}>
