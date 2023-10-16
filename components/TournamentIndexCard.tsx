@@ -42,6 +42,7 @@ export default function TournamentIndexCard({
         <Button
           className="hover:scale-105 active:scale-100 transition-all duration-75"
           asChild
+          aria-label="View tournament"
         >
           <Link href={`/tournaments/${tournament.slug}`}>View</Link>
         </Button>

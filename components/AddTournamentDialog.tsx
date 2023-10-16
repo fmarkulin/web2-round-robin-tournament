@@ -18,12 +18,13 @@ import Link from "next/link";
 
 export default function AddTournamentDialog() {
   const closeRef = useRef(null);
-  const { user, error, isLoading } = useUser();
+  const { user } = useUser();
 
   return (
     <Dialog>
       <DialogTrigger asChild>
         <Button
+          aria-label="Add tournament"
           size={"icon"}
           className="rounded-full z-10 text-lg w-14 h-14 fixed right-8 bottom-10 shadow-lg hover:shadow-xl hover:scale-110 transition-all duration-75"
         >

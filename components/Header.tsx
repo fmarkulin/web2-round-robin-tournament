@@ -10,7 +10,7 @@ export default async function Header() {
   return (
     <header className="sticky bg-inherit top-0 left-0 right-0 z-10 shadow-sm">
       <div className="max-w-7xl mx-auto flex justify-between items-center py-3 px-8">
-        <Link href={"/"}>
+        <Link aria-label="Home page" href={"/"}>
           <Home className="w-8 h-8" />
         </Link>
         <div className="flex gap-4 items-center">
