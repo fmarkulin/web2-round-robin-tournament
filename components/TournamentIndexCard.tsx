@@ -19,10 +19,15 @@ export default function TournamentIndexCard({
   return (
     <Card className="shadow hover:shadow-md transition-all duration-200 ">
       <CardHeader>
-        <CardTitle>{tournament.title}</CardTitle>
+        <CardTitle>
+          {tournament.title}{" "}
+          <span className="text-gray-400">
+            #{tournament.slug.slice(tournament.slug.length - 4)}
+          </span>
+        </CardTitle>
         <CardDescription>
-          {tournament.pointSystem.charAt(0).toUpperCase() +
-            tournament.pointSystem.slice(1)}
+          {tournament.pointSystem.win}/{tournament.pointSystem.draw}/
+          {tournament.pointSystem.loss}
         </CardDescription>
       </CardHeader>
       <CardContent>

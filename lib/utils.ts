@@ -28,7 +28,7 @@ export function roundRobinTournament(players: Player[]) {
         id: j,
         p1: p1.name === "bye" ? null : p1.id,
         p2: p2.name === "bye" ? null : p2.id,
-        winner: p1.name === "bye" ? 2 : p2.name === "bye" ? 1 : null,
+        winner: null,
       };
 
       round.pairs.push(pair);

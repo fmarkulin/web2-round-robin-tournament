@@ -42,7 +42,7 @@ export default function PublicTable({
                   : pair.winner === null
                   ? "bg-muted text-muted-foreground hover:bg-muted hover:text-muted-foreground"
                   : "bg-destructive hover:bg-destructive") +
-                " hover:cursor-pointer"
+                " hover:cursor-default"
               }
             >
               {pair.winner === 1
@@ -69,7 +69,7 @@ export default function PublicTable({
                   : pair.winner === null
                   ? "bg-muted text-muted-foreground hover:bg-muted hover:text-muted-foreground"
                   : "bg-destructive hover:bg-destructive") +
-                " hover:cursor-pointer"
+                " hover:cursor-default"
               }
             >
               {pair.winner === 2

@@ -63,15 +63,20 @@ export default async function Page({ params }: { params: { slug: string } }) {
   return (
     <>
       <div className="flex gap-4 items-center">
-        <h1 className="text-4xl text font-bold">{tournament.title}</h1>
+        <h1 className="text-4xl text font-bold">
+          {tournament.title}{" "}
+          <span className="text-muted-foreground text-gray-400">
+            #{tournament.slug.slice(tournament.slug.length - 4)}
+          </span>
+        </h1>
         <CopyToClipboard />
         {user && user.sub === tournament.userSub && (
           <DeleteTournament tournament={tournament} />
         )}
       </div>
       <h4 className="text-2xl text-slate-500 font-medium mb-5">
-        {tournament.pointSystem.charAt(0).toUpperCase() +
-          tournament.pointSystem.slice(1)}
+        {tournament.pointSystem.win}/{tournament.pointSystem.draw}/
+        {tournament.pointSystem.loss}
       </h4>
       <div className="flex flex-col gap-16 justify-between items-center md:flex-row md:gap-8 md:items-start">
         <div className="flex flex-col gap-10">

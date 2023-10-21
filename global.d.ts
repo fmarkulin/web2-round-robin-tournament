@@ -16,11 +16,17 @@ declare type Round = {
   pairs: Pair[];
 };
 
+declare type PointSystem = {
+  win: number;
+  draw: number;
+  loss: number;
+};
+
 declare type Tournament = {
   title: string;
   slug: string;
   userSub: string;
-  pointSystem: "football" | "basketball" | "chess";
+  pointSystem: PointSystem;
   players: Player[];
   rounds: Round[];
   timestamp: number;

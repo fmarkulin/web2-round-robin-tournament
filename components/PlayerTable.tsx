@@ -13,7 +13,7 @@ export default function PlayerTable({
   rounds,
   players,
 }: {
-  pointSystem: "football" | "basketball" | "chess";
+  pointSystem: PointSystem;
   rounds: Round[];
   players: Player[];
 }) {
@@ -25,65 +25,15 @@ export default function PlayerTable({
           const p2 = players.find((player) => player.id === pair.p2);
           if (p1 && p2) {
             if (pair.winner === 1) {
-              p1.points +=
-                pointSystem === "football"
-                  ? 3
-                  : pointSystem === "basketball"
-                  ? 2
-                  : 1;
-              p2.points +=
-                pointSystem === "football"
-                  ? 0
-                  : pointSystem === "basketball"
-                  ? 1
-                  : 0;
+              p1.points += pointSystem.win;
+              p2.points += pointSystem.loss;
             } else if (pair.winner === 2) {
-              p2.points +=
-                pointSystem === "football"
-                  ? 3
-                  : pointSystem === "basketball"
-                  ? 2
-                  : 1;
-              p1.points +=
-                pointSystem === "football"
-                  ? 0
-                  : pointSystem === "basketball"
-                  ? 1
-                  : 0;
+              p2.points += pointSystem.win;
+              p1.points += pointSystem.loss;
             } else if (pair.winner === 0) {
-              p1.points +=
-                pointSystem === "football"
-                  ? 1
-                  : pointSystem === "basketball"
-                  ? 0
-                  : 0.5;
-              p2.points +=
-                pointSystem === "football"
-                  ? 1
-                  : pointSystem === "basketball"
-                  ? 0
-                  : 0.5;
+              p1.points += pointSystem.draw;
+              p2.points += pointSystem.draw;
             }
-          }
-        } else if (pair.p1 !== null) {
-          const p1 = players.find((player) => player.id === pair.p1);
-          if (p1) {
-            p1.points +=
-              pointSystem === "football"
-                ? 3
-                : pointSystem === "basketball"
-                ? 2
-                : 1;
-          }
-        } else if (pair.p2 !== null) {
-          const p2 = players.find((player) => player.id === pair.p2);
-          if (p2) {
-            p2.points +=
-              pointSystem === "football"
-                ? 3
-                : pointSystem === "basketball"
-                ? 2
-                : 1;
           }
         }
       }

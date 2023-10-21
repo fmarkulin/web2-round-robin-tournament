@@ -1,4 +1,0 @@
-lista turnira ne smije biti javna, samo preko poveznice (prijavljeni korisnik može vidjeti svoje turnire)
-dostaviti dva računa, ne jedan! s jednim napraviti turnire, drugi ostaviti prazan (bez turnira)
-sustav bodovanja ne preddefinirati, nego omogućiti unos u formatu pobjeda/remi/poraz
-bye ne znači da je taj krug pobijedio onaj koji nije bye, nego propušta jedan krug i ne boduje mu se ništa

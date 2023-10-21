@@ -77,8 +77,9 @@ export default function DeleteTournament({
             className="hover:cursor-pointer"
             onClick={deleteTournament}
             disabled={isLoading || !user || user.sub !== tournament.userSub}
+            asChild
           >
-            <Trash2 className="text-destructive hover:text-destructive" />
+            <Trash2 className="text-destructive hover:text-destructive p-2" />
           </Button>
         </TooltipTrigger>
         <TooltipContent>

@@ -14,22 +14,21 @@ import {
 } from "./ui/form";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
-import { Textarea } from "./ui/textarea";
 import { RefObject, useState } from "react";
 import { Timestamp, doc, getDoc, writeBatch } from "firebase/firestore";
 import { db } from "@/data/firebase";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "./ui/select";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import slugify from "slugify";
 import { useUser } from "@auth0/nextjs-auth0/client";
 import { roundRobinTournament } from "@/lib/utils";
+import { RefreshCcw } from "lucide-react";
+
+const generate4DigitId = () => {
+  return Math.floor(Math.random() * 1000)
+    .toString()
+    .padStart(4, "0");
+};
 
 export default function AddTournamentForm({
   closeRef,
@@ -42,30 +41,64 @@ export default function AddTournamentForm({
   const schema = z.object({
     title: z
       .string()
-      .min(3, "Tournament title must be at least 3 characters long")
-      .refine(async (value) => {
-        if (value.length === 0) {
-          setSlug("");
-          return false;
-        }
-        const newSlug = slugify(value, {
-          lower: true,
-          remove: /[*+~.()'"!:@/]/g,
-        });
-        setSlug(newSlug);
-
-        const tournamentRef = doc(db, "tournaments", newSlug);
-        try {
-          const tournamentSnapshot = await getDoc(tournamentRef);
-          if (tournamentSnapshot.exists()) {
+      .min(3, {
+        message: "Title must contain at least 3 alphanumeric character",
+      })
+      .refine(
+        (value) => {
+          let newSlug = slugify(value, {
+            lower: true,
+            strict: true,
+          });
+          if (newSlug.length < 3) {
+            setSlug("");
             return false;
           }
+
+          // const slugId = generate4DigitId();
+          newSlug = `${newSlug}-${slugId}`;
+          setSlug(newSlug);
+
           return true;
-        } catch (error) {
-          console.error(error);
-          return false;
+        },
+        {
+          message: "Title must contain at least 3 alphanumeric character",
         }
-      }, "Choose a different title"),
+      )
+      .refine(
+        async (value) => {
+          let newSlug = slugify(value, {
+            lower: true,
+            strict: true,
+          });
+          if (newSlug.length < 3) {
+            setSlug("");
+            return false;
+          }
+
+          // const slugId = generate4DigitId();
+          newSlug = `${newSlug}-${slugId}`;
+
+          if (newSlug.length === 0) {
+            return false;
+          }
+          const tournamentRef = doc(db, "tournaments", newSlug);
+          try {
+            const tournamentSnapshot = await getDoc(tournamentRef);
+            if (tournamentSnapshot.exists()) {
+              return false;
+            }
+            return true;
+          } catch (error) {
+            console.error(error);
+            return false;
+          }
+        },
+        {
+          message:
+            "Tournament with this title already exists. Regenerate the ID or choose a different title.",
+        }
+      ),
     players: z
       .string()
       .includes(";", {
@@ -81,29 +114,82 @@ export default function AddTournamentForm({
             "Tournament must have at least 4 players and at most 8 players",
         }
       ),
-    pointSystem: z.enum(["football", "chess", "basketball"], {
-      required_error: "You must select a point system",
-    }),
+    pointSystem: z
+      .string()
+      .includes("/", {
+        message: `Point system must be in the form of: win/draw/loss. Check for "/".`,
+      })
+      .refine(
+        (value) => {
+          const [win, draw, loss] = value.split("/");
+          if (
+            win === undefined ||
+            win.length === 0 ||
+            draw === undefined ||
+            draw.length === 0 ||
+            loss === undefined ||
+            loss.length === 0
+          ) {
+            return false;
+          }
+          return true;
+        },
+        {
+          message: `Point system must be in the form of: win/draw/loss. Check if you have all 3 values separated by "/".`,
+        }
+      )
+      .refine(
+        (value) => {
+          const [win, draw, loss] = value.split("/");
+          if (
+            isNaN(Number(win)) ||
+            isNaN(Number(draw)) ||
+            isNaN(Number(loss))
+          ) {
+            return false;
+          }
+          return true;
+        },
+        {
+          message: `Point system must be in the form of: win/draw/loss. Decimal values use dot (.) notation. Check if all 3 values are numbers.`,
+        }
+      ),
   });
 
   const form = useForm<z.infer<typeof schema>>({
     resolver: zodResolver(schema),
+    mode: "onBlur",
+    reValidateMode: "onChange",
     delayError: 250,
-    mode: "onChange",
     defaultValues: {
       title: "",
       players: "",
+      pointSystem: "",
     },
     shouldUnregister: true,
   });
 
   async function onSubmit(values: z.infer<typeof schema>) {
+    const userToast = toast.loading("Checking user...");
     if (!user) {
+      toast.dismiss(userToast);
       toast.error("You must be logged in to create a tournament.");
       return;
     }
+    toast.dismiss(userToast);
+
     const { title, players, pointSystem } = values;
 
+    const pointSystemToast = toast.loading("Formatting point system...");
+    const [win, draw, loss] = pointSystem.split("/").map(Number);
+    const formattedPointSystem: PointSystem = {
+      win,
+      draw,
+      loss,
+    };
+    toast.dismiss(pointSystemToast);
+
+    const playerToast = toast.loading("Formatting players...");
     const formattedPlayers: Player[] = players.split(";").map((player, i) => {
       return {
         id: i,
@@ -111,24 +197,13 @@ export default function AddTournamentForm({
         points: 0,
       };
     });
+    toast.dismiss(playerToast);
 
-    let numberOfRounds: number;
-    switch (formattedPlayers.length) {
-      case 8:
-      case 7:
-        numberOfRounds = 7;
-        break;
-      case 6:
-      case 5:
-        numberOfRounds = 5;
-        break;
-      default:
-        numberOfRounds = 3;
-        break;
-    }
-
+    const roundsToast = toast.loading("Creating rounds...");
     const rounds: Round[] = roundRobinTournament(formattedPlayers);
+    toast.dismiss(roundsToast);
 
+    const prepareToast = toast.loading("Preparing tournament...");
     const batch = writeBatch(db);
 
     const tournament = {
@@ -136,7 +211,7 @@ export default function AddTournamentForm({
       title,
       userSub: user.sub,
       players: formattedPlayers,
-      pointSystem,
+      pointSystem: formattedPointSystem,
       timestamp: Timestamp.now().toMillis(),
     };
 
@@ -175,6 +250,7 @@ export default function AddTournamentForm({
       success: "Created!",
       error: "Error creating.",
     });
+    toast.dismiss(prepareToast);
 
     try {
       await batchPromise;
@@ -186,6 +262,7 @@ export default function AddTournamentForm({
   }
 
   const [slug, setSlug] = useState<string>("");
+  const [slugId, setSlugId] = useState<string>(generate4DigitId);
 
   return (
     <Form {...form}>
@@ -194,20 +271,53 @@ export default function AddTournamentForm({
           control={form.control}
           name="title"
           render={({ field }) => (
-            <FormItem>
-              <FormLabel>Title</FormLabel>
-              <FormControl>
-                <Input
-                  placeholder="Chess"
-                  // onChange={(e) => setSlug(slugify(e.target.value))}
-                  {...field}
-                />
-              </FormControl>
-              <FormDescription>
-                URL: <span className="font-mono">{"/tournaments/" + slug}</span>
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
+            <div className="flex justify-between gap-2">
+              <FormItem className="grow">
+                <FormLabel>Title</FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder="Chess"
+                    // onChange={(e) => setSlug(slugify(e.target.value))}
+                    {...field}
+                  />
+                </FormControl>
+                <FormDescription>
+                  URL:{" "}
+                  <span className="font-mono">
+                    {"/tournaments/"}
+                    <span className="text-primary">{slug}</span>
+                  </span>
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+              <FormItem>
+                <FormLabel className="inline-flex gap-2">
+                  ID{" "}
+                  <Button
+                    variant={"ghost"}
+                    size={"icon"}
+                    asChild
+                    onClick={() => {
+                      setSlugId(generate4DigitId);
+                      setTimeout(() => {
+                        form.trigger("title");
+                      }, 150);
+                    }}
+                    className="active:scale-95 hover:cursor-pointer"
+                  >
+                    <RefreshCcw className="w-4 h-4 place-self-center" />
+                  </Button>
+                </FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder="####"
+                    value={slugId}
+                    disabled
+                    className="w-16"
+                  />
+                </FormControl>
+              </FormItem>
+            </div>
           )}
         />
         <FormField
@@ -217,11 +327,7 @@ export default function AddTournamentForm({
             <FormItem>
               <FormLabel>Players</FormLabel>
               <FormControl>
-                <Textarea
-                  className="resize-none"
-                  placeholder="John;Jane;..."
-                  {...field}
-                />
+                <Input placeholder="John;Jane;..." {...field} />
               </FormControl>
               <FormDescription>
                 These are your tournament players.
@@ -235,21 +341,13 @@ export default function AddTournamentForm({
           name="pointSystem"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Players</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select a point system" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  <SelectItem value="football">Football (3/1/0)</SelectItem>
-                  <SelectItem value="chess">Chess (1/0,5/0)</SelectItem>
-                  <SelectItem value="basketball">Basketball (2/0/1)</SelectItem>
-                </SelectContent>
-              </Select>
+              <FormLabel>Point system</FormLabel>
+              <FormControl>
+                <Input placeholder="1/0.5/0" {...field} />
+              </FormControl>
               <FormDescription>
-                These are your tournament players.
+                Point system in the form of:{" "}
+                <span className="font-mono">win/draw/loss</span>
               </FormDescription>
               <FormMessage />
             </FormItem>

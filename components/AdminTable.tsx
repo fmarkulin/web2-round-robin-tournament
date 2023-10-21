@@ -41,6 +41,13 @@ export default function AdminTable({
   const router = useRouter();
 
   const setWinner = async (winner: number) => {
+    if (pair.p1 === null || pair.p2 === null) {
+      toast("Someone's sneaky!", {
+        icon: "👀",
+      });
+      return;
+    }
+
     const updatePromise = updateDoc(
       doc(
         db,
@@ -70,6 +77,13 @@ export default function AdminTable({
   };
 
   const setDraw = async () => {
+    if (pair.p1 === null || pair.p2 === null) {
+      toast("Someone's sneaky!", {
+        icon: "👀",
+      });
+      return;
+    }
+
     const updatePromise = updateDoc(
       doc(
         db,
@@ -116,17 +130,21 @@ export default function AdminTable({
           <TableCell>
             <Badge
               className={
-                (pair.winner === 1
+                (pair.p1 === null || pair.p2 === null
+                  ? ""
+                  : pair.winner === 1
                   ? "bg-green-500 hover:bg-green-400"
                   : pair.winner === 0
                   ? "bg-sky-500 hover:bg-sky-400"
                   : pair.winner === null
                   ? "bg-muted text-muted-foreground hover:bg-muted hover:text-muted-foreground"
                   : "bg-destructive hover:bg-destructive") +
-                " hover:cursor-pointer"
+                " hover:cursor-default"
               }
             >
-              {pair.winner === 1
+              {pair.p1 === null || pair.p2 === null
+                ? "bye"
+                : pair.winner === 1
                 ? "winner"
                 : pair.winner === 0
                 ? "draw"
@@ -172,17 +190,21 @@ export default function AdminTable({
           <TableCell>
             <Badge
               className={
-                (pair.winner === 2
+                (pair.p1 === null || pair.p2 === null
+                  ? ""
+                  : pair.winner === 2
                   ? "bg-green-500 hover:bg-green-400"
                   : pair.winner === 0
                   ? "bg-sky-500 hover:bg-sky-400"
                   : pair.winner === null
                   ? "bg-muted text-muted-foreground hover:bg-muted hover:text-muted-foreground"
                   : "bg-destructive hover:bg-destructive") +
-                " hover:cursor-pointer"
+                " hover:cursor-default"
               }
             >
-              {pair.winner === 2
+              {pair.p1 === null || pair.p2 === null
+                ? "bye"
+                : pair.winner === 2
                 ? "winner"
                 : pair.winner === 0
                 ? "draw"
