@@ -18,10 +18,16 @@ The application is hosted on **Vercel** and can be accessed at [https://web2-rou
 
 ## Usage
 
-When first accessing the app, the user is greeted with a index page displaying all currently registered tournaments. The user can click to view each tournament, see the results for each match in each round as well as the current standing for all players.
+When first accessing the app, the user is greeted with a index page displaying the tournamets registered by them if they're logged in. The user can click to view each tournament, see the results for each match in each round as well as the current standing for all players.
 
 On the index page the user can also add a new tournament by clicking the **+** icon button in the bottom right corner after which a dialog window is triggered.
 
 If the user isn't logged in, they will be prompted to log in using Auth0. After logging in, the user can once again click the **+** icon button to add a new tournament after which a dialog window is triggered, this time with a form for adding a new tournament.
 
-When adding a new tournament, the user can enter the tournament name, add players to the tournament and choose a point system. The users are separated by a **semicolon (;)** and the available point systems are **Football (3/1/0)**, **Chess (1/0.5/0)** and **Basketball (2/0/1)**.
+When adding a new tournament, the user can enter the tournament title, add players to the tournament and input a point system. A unique 4 digit numeric ID get's appended to the slug that was generated from the tournament title. This allows for up to 10^4 tournaments with the same title while keeping the URLs readable and memorable. The users are separated by a **semicolon (;)** and the available point system should be entered in the format `win/draw/loss`.
+
+After successfully adding a new tournament, it is then displayed on the index page along the other registered tournaments by that user.
+
+When a user views a tournament that they created, they can edit the tournament standings by selecting in each match in each round who the winner was or if the match ended in a draw. The results of each match are taken into account when calculating the final standings of the tournament, according to the corresponding point system.
+
+They can also delete the tournament, as well as copy the full URL to that tournament and share it with other users. If a user accesses a tournament that they didn't create, they will be able to view the tournament, but not alter it.

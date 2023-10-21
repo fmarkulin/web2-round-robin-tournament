@@ -2,7 +2,6 @@ import { db } from "@/data/firebase";
 import { collection, getDocs } from "firebase/firestore";
 import TournamentIndexCard from "./TournamentIndexCard";
 import { getSession } from "@auth0/nextjs-auth0";
-import TournamentsLoading from "./TournamentsLoading";
 
 const getTournaments = async () => {
   const tournamentSnapshots = await getDocs(collection(db, "tournaments"));
