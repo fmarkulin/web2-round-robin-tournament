@@ -47,6 +47,7 @@ export default function PlayerTable({
       </TableCaption>
       <TableHeader>
         <TableRow>
+          <TableHead>Nº</TableHead>
           <TableHead>Player</TableHead>
           <TableHead>Points</TableHead>
         </TableRow>
@@ -56,6 +57,9 @@ export default function PlayerTable({
           .sort((a, b) => b.points - a.points)
           .map((player) => (
             <TableRow key={player.id}>
+              <TableCell className="text-muted-foreground">
+                {`#${player.id}`}
+              </TableCell>
               <TableCell>{player.name}</TableCell>
               <TableCell>{player.points}</TableCell>
             </TableRow>

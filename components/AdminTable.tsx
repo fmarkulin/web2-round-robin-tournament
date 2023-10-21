@@ -117,6 +117,7 @@ export default function AdminTable({
       <TableCaption>{`Pair ${index + 1}`}</TableCaption>
       <TableHeader>
         <TableRow>
+          <TableHead>Nº</TableHead>
           <TableHead>Player</TableHead>
           <TableHead>Status</TableHead>
           <TableHead>Action</TableHead>
@@ -124,6 +125,9 @@ export default function AdminTable({
       </TableHeader>
       <TableBody>
         <TableRow>
+          <TableCell className="text-muted-foreground">
+            {pair.p1 !== null ? `#${players[pair.p1].id}` : "-"}
+          </TableCell>
           <TableCell>
             {pair.p1 !== null ? players[pair.p1].name : <i>bye</i>}
           </TableCell>
@@ -184,6 +188,9 @@ export default function AdminTable({
           </TableCell>
         </TableRow>
         <TableRow>
+          <TableCell className="text-muted-foreground">
+            {pair.p2 !== null ? `#${players[pair.p2].id}` : "-"}
+          </TableCell>
           <TableCell>
             {pair.p2 !== null ? players[pair.p2].name : <i>bye</i>}
           </TableCell>

@@ -2,6 +2,15 @@ import { Home } from "lucide-react";
 import Link from "next/link";
 import { ModeToggle } from "./ModeToggle";
 import { getSession } from "@auth0/nextjs-auth0";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "./ui/dropdown-menu";
+import { Avatar, AvatarFallback } from "./ui/avatar";
 
 export default async function Header() {
   const session = await getSession();
@@ -14,17 +23,34 @@ export default async function Header() {
           <Home className="w-8 h-8" />
         </Link>
         <div className="flex gap-4 items-center">
-          <ModeToggle />
           {!user && (
             <Link href={"/api/auth/login"} className="font-bold">
               Login
             </Link>
           )}
           {user && (
-            <Link href={"/api/auth/logout"} className="font-bold">
-              Logout
-            </Link>
+            <DropdownMenu>
+              <DropdownMenuTrigger>
+                <Avatar>
+                  <AvatarFallback>{user.nickname[0]}</AvatarFallback>
+                </Avatar>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                <DropdownMenuLabel>{user.email}</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <Link
+                  href={"/api/auth/logout"}
+                  className="font-bold hover:cursor-pointer"
+                  passHref
+                >
+                  <DropdownMenuItem className="hover:cursor-pointer">
+                    Logout
+                  </DropdownMenuItem>
+                </Link>
+              </DropdownMenuContent>
+            </DropdownMenu>
           )}
+          <ModeToggle />
         </div>
       </div>
     </header>

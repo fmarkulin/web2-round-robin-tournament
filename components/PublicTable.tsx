@@ -23,19 +23,25 @@ export default function PublicTable({
       <TableCaption>{`Pair ${index + 1}`}</TableCaption>
       <TableHeader>
         <TableRow>
+          <TableHead>Nº</TableHead>
           <TableHead>Player</TableHead>
           <TableHead>Status</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
         <TableRow>
+          <TableCell className="text-muted-foreground">
+            {pair.p1 !== null ? `#${players[pair.p1].id}` : "-"}
+          </TableCell>
           <TableCell>
             {pair.p1 !== null ? players[pair.p1].name : <i>bye</i>}
           </TableCell>
           <TableCell>
             <Badge
               className={
-                (pair.winner === 1
+                (pair.p1 === null || pair.p2 === null
+                  ? ""
+                  : pair.winner === 1
                   ? "bg-green-500 hover:bg-green-400"
                   : pair.winner === 0
                   ? "bg-sky-500 hover:bg-sky-400"
@@ -45,7 +51,9 @@ export default function PublicTable({
                 " hover:cursor-default"
               }
             >
-              {pair.winner === 1
+              {pair.p1 === null || pair.p2 === null
+                ? "bye"
+                : pair.winner === 1
                 ? "winner"
                 : pair.winner === 0
                 ? "draw"
@@ -56,13 +64,18 @@ export default function PublicTable({
           </TableCell>
         </TableRow>
         <TableRow>
+          <TableCell className="text-muted-foreground">
+            {pair.p2 !== null ? `#${players[pair.p2].id}` : "-"}
+          </TableCell>
           <TableCell>
             {pair.p2 !== null ? players[pair.p2].name : <i>bye</i>}
           </TableCell>
           <TableCell>
             <Badge
               className={
-                (pair.winner === 2
+                (pair.p1 === null || pair.p2 === null
+                  ? ""
+                  : pair.winner === 2
                   ? "bg-green-500 hover:bg-green-400"
                   : pair.winner === 0
                   ? "bg-sky-500 hover:bg-sky-400"
@@ -72,7 +85,9 @@ export default function PublicTable({
                 " hover:cursor-default"
               }
             >
-              {pair.winner === 2
+              {pair.p1 === null || pair.p2 === null
+                ? "bye"
+                : pair.winner === 2
                 ? "winner"
                 : pair.winner === 0
                 ? "draw"

@@ -35,7 +35,10 @@ export default function TournamentIndexCard({
           <h4 className="mb-3 text-md font-medium leading-none ">Players</h4>
           {tournament.players.map((player, i) => (
             <div key={player.id}>
-              <p>{player.name}</p>
+              <p>
+                <span className="text-muted-foreground">{`#${player.id + 1} `}</span>
+                {player.name}
+              </p>
               {i !== tournament.players.length - 1 && (
                 <Separator className="my-2" />
               )}
