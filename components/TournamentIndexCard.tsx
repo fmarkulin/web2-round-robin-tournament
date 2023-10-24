@@ -14,7 +14,7 @@ import { Separator } from "./ui/separator";
 export default function TournamentIndexCard({
   tournament,
 }: {
-  tournament: Tournament;
+  tournament: Omit<Tournament, "rounds">;
 }) {
   return (
     <Card className="shadow hover:shadow-md transition-all duration-200 ">
@@ -36,7 +36,9 @@ export default function TournamentIndexCard({
           {tournament.players.map((player, i) => (
             <div key={player.id}>
               <p>
-                <span className="text-muted-foreground">{`#${player.id + 1} `}</span>
+                <span className="text-muted-foreground">{`#${
+                  player.id + 1
+                } `}</span>
                 {player.name}
               </p>
               {i !== tournament.players.length - 1 && (

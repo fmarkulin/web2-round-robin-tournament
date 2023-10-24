@@ -1,47 +1,54 @@
+"use client";
+
 import { db } from "@/data/firebase";
-import { collection, getDocs } from "firebase/firestore";
+import { collection, getDocs, onSnapshot } from "firebase/firestore";
 import TournamentIndexCard from "./TournamentIndexCard";
-import { getSession } from "@auth0/nextjs-auth0";
+import { useUser } from "@auth0/nextjs-auth0/client";
+import { useEffect, useState } from "react";
+import TournamentsLoading from "./TournamentsLoading";
+import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
+import { AlertCircle } from "lucide-react";
 
-const getTournaments = async () => {
-  const tournamentSnapshots = await getDocs(collection(db, "tournaments"));
-  const tournaments: Tournament[] = [];
-  for (let doc of tournamentSnapshots.docs) {
-    const data = doc.data();
-    const firestoreRoundsSnapshots = await getDocs(
-      collection(db, "tournaments", data.slug, "rounds")
+export default function Tournaments() {
+  const { user, isLoading, error } = useUser();
+  const [tournaments, setTournaments] = useState<
+    Omit<Tournament, "rounds">[] | undefined
+  >(undefined);
+
+  // tournaments listener
+  useEffect(() => {
+    const ref = collection(db, "tournaments");
+    const unsubscribe = onSnapshot(ref, (snapshot) => {
+      const tournaments: Omit<Tournament, "rounds">[] = [];
+      snapshot.forEach((doc) => {
+        const data = doc.data();
+        tournaments.push({
+          userSub: data.userSub,
+          slug: data.slug,
+          title: data.title,
+          pointSystem: data.pointSystem,
+          timestamp: data.timestamp,
+          players: data.players,
+        });
+      });
+      setTournaments(tournaments);
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  if (isLoading || tournaments === undefined) return <TournamentsLoading />;
+
+  if (error)
+    return (
+      <Alert variant="destructive">
+        <AlertCircle className="h-4 w-4" />
+        <AlertTitle>Error</AlertTitle>
+        <AlertDescription>
+          An error occured. Please try again later by refreshing the page.
+        </AlertDescription>
+      </Alert>
     );
-    const rounds: Round[] = [];
-    for (let roundDoc of firestoreRoundsSnapshots.docs) {
-      const pairs: Pair[] = [];
-      const firestorePairsSnapshots = await getDocs(
-        collection(db, "tournaments", data.slug, "rounds", roundDoc.id, "pairs")
-      );
-      for (let pairDoc of firestorePairsSnapshots.docs) {
-        pairs.push(pairDoc.data() as Pair);
-      }
-      rounds.push({ id: Number(roundDoc.id), pairs });
-    }
-    const tournament: Tournament = {
-      userSub: data.userSub,
-      slug: data.slug,
-      title: data.title,
-      pointSystem: data.pointSystem,
-      timestamp: data.timestamp,
-      rounds,
-      players: data.players,
-    };
-    tournaments.push(tournament);
-  }
-  const wait = (ms: number) => new Promise((res) => setTimeout(res, ms));
-  // await wait(500); // simulate network delay
-  return tournaments.sort((a, b) => b.timestamp - a.timestamp);
-};
-
-export default async function Tournaments() {
-  const tournaments: Tournament[] = await getTournaments();
-  const session = await getSession();
-  const { user } = session || {};
 
   if (!user)
     return (

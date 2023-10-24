@@ -38,8 +38,6 @@ export default function AdminTable({
   players: Player[];
   index: number;
 }) {
-  const router = useRouter();
-
   const setWinner = async (winner: number) => {
     if (pair.p1 === null || pair.p2 === null) {
       toast("Someone's sneaky!", {
@@ -70,7 +68,6 @@ export default function AdminTable({
 
     try {
       await updatePromise;
-      router.refresh();
     } catch (e) {
       console.log(e);
     }
@@ -106,7 +103,6 @@ export default function AdminTable({
 
     try {
       await updatePromise;
-      router.refresh();
     } catch (e) {
       console.log(e);
     }

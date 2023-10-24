@@ -58,7 +58,7 @@ export default function PlayerTable({
           .map((player) => (
             <TableRow key={player.id}>
               <TableCell className="text-muted-foreground">
-                {`#${player.id}`}
+                {`#${player.id + 1}`}
               </TableCell>
               <TableCell>{player.name}</TableCell>
               <TableCell>{player.points}</TableCell>

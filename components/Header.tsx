@@ -1,7 +1,8 @@
-import { Home } from "lucide-react";
+"use client";
+
+import { AlertCircle, Home } from "lucide-react";
 import Link from "next/link";
 import { ModeToggle } from "./ModeToggle";
-import { getSession } from "@auth0/nextjs-auth0";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,10 +12,11 @@ import {
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "./ui/avatar";
+import { useUser } from "@auth0/nextjs-auth0/client";
+import AvatarLoading from "./AvatarLoading";
 
-export default async function Header() {
-  const session = await getSession();
-  const { user } = session || {};
+export default function Header() {
+  const { user, isLoading, error } = useUser();
 
   return (
     <header className="sticky bg-inherit top-0 left-0 right-0 z-10 shadow-sm">
@@ -23,16 +25,22 @@ export default async function Header() {
           <Home className="w-8 h-8" />
         </Link>
         <div className="flex gap-4 items-center">
-          {!user && (
+          {isLoading && <AvatarLoading />}
+          {!isLoading && error && (
+            <AlertCircle className="w-8 h-8 stroke-destructive" />
+          )}
+          {!isLoading && !user && (
             <Link href={"/api/auth/login"} className="font-bold">
               Login
             </Link>
           )}
-          {user && (
+          {!isLoading && user && (
             <DropdownMenu>
               <DropdownMenuTrigger>
                 <Avatar>
-                  <AvatarFallback>{user.nickname[0]}</AvatarFallback>
+                  <AvatarFallback>
+                    {user.nickname?.[0] || user.email?.[0] || "u"}
+                  </AvatarFallback>
                 </Avatar>
               </DropdownMenuTrigger>
               <DropdownMenuContent>
