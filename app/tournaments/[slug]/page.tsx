@@ -86,7 +86,7 @@ export default function TournametPage({
     });
 
     return () => unsubscribe();
-  }, []);
+  }, [slug]);
 
   // pairs listeners (for each round)
   useEffect(() => {
@@ -110,7 +110,7 @@ export default function TournametPage({
     });
 
     return () => unsubscribe.forEach((unsub) => unsub());
-  }, [rounds]);
+  }, [rounds, slug]);
 
   if (error) {
     toast.error("Error checking user. Redirecting...");
