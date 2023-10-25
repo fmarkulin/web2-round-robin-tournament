@@ -78,6 +78,9 @@ export default function TournametPage({
   useEffect(() => {
     const ref = collection(db, "tournaments", slug, "rounds");
     const unsubscribe = onSnapshot(ref, (snapshot) => {
+      if (snapshot.empty) {
+        router.replace("/404");
+      }
       const rounds: Omit<Round, "pairs">[] = [];
       snapshot.forEach((doc) => {
         rounds.push({ id: Number(doc.id) });
@@ -104,7 +107,8 @@ export default function TournametPage({
         if (newTournament) {
           setTournament(newTournament);
         } else {
-          notFound();
+          console.log("tournament not found");
+          throw notFound();
         }
       });
     });
